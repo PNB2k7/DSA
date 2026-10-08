@@ -1,0 +1,28 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+
+void greed(vector<pair<int,int>> &v, vector<pair<int,int>> &res, int i = 1){
+    if(i == v.size()) return;
+    else{
+        if(v[i].first >= res.rbegin()->second) res.push_back(v[i]);
+        greed(v,res,i+1);
+    }
+}
+
+int main(){
+    int t; cin>>t;
+    while(t--){
+        int n; cin>>n;
+        vector<pair<int,int>> v(n);
+        for(int i=0; i<n; i++) cin>>v[i].first;
+        for(int i=0; i<n; i++) cin>>v[i].second;
+        sort(v.begin(), v.end(), [](pair<int,int> &a, pair<int,int> &b){
+            return a.second < b.second;
+        });
+        vector<pair<int,int>> res{v[0]};
+        greed(v,res);
+        cout<<res.size()<<endl;
+    }
+}
