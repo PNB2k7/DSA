@@ -1,67 +1,47 @@
-// https://code.ptit.edu.vn/student/question/DSA02014
-// TỪ ĐIỂN
-
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
 
-const int dr[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
-const int dc[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
+struct Node{
+    int value;
+    Node *left, *right;
+};
 
-int k, n, m;
-map<string, int> dic;
-vector<vector<string>> a;
-vector<vector<bool>> vs;
-vector<string> res;
-
-void Try(int i, int j, string s) {
-    if (dic[s]) res.push_back(s);
-    for (int z = 0; z < 8; ++z) {
-        int x = i + dr[z];
-        int y = j + dc[z];
-        if (x >= 0 && x < n && y >= 0 && y < m && vs[x][y] == 0) {
-            vs[x][y] = 1;
-            Try(x, y, s + a[x][y]);
-            vs[x][y] = 0;
-        }
+void add(Node *&tree, vector<int> in, vector<int> pre){ 
+    tree = new Node();
+    tree->value = pre[0];
+    int index = 0;
+    while(in[index] != pre[0]) index++;
+    vector<int> tmp_in, tmp_pre;
+    for(int i=0; i<index; i++){
+        tmp_in.push_back(in[i]);
+        tmp_pre.push_back(pre[i+1]);
     }
+    if(tmp_in.size()) add(tree->left, tmp_in, tmp_pre);
+    tmp_in.clear(); tmp_pre.clear();
+    for(int i=index+1; i<in.size(); i++){
+        tmp_in.push_back(in[i]);
+        tmp_pre.push_back(pre[i]);
+    }
+    if(tmp_in.size()) add(tree->right, tmp_in, tmp_pre);
 }
 
-void testCase() {
-    dic.clear(); res.clear();
-    cin >> k >> n >> m;
-    while (k--) {
-        string s; cin >> s;
-        dic[s] = 1;
-    }
-    a.clear(); a.resize(n, vector<string>(m));
-    vs.clear(); vs.resize(n, vector<bool>(m, 0));
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < m; ++j) {
-            cin >> a[i][j];
-        }
-    }
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < m; ++j) {
-            vs[i][j] = 1;
-            Try(i, j, a[i][j]);
-            vs[i][j] = 0;
-        }
-    }
-    if (res.empty()) {
-        cout << -1;
-        return;
-    }
-    for (string i : res) cout << i << " ";
+void post(Node *tree){
+    if(tree == NULL) return;
+    post(tree->left);
+    post(tree->right);
+    cout<<tree->value<<" ";
 }
 
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL); cout.tie(NULL);
-
-    int T = 1; cin >> T;
-    while (T--) {
-        testCase();
-        cout << "\n";
+int main(){
+    int t; cin>>t;
+    while(t--){
+        int n; cin>>n;
+        vector<int> pre(n),in(n);
+        for(auto &x : in) cin>>x;
+        for(auto &x : pre) cin>>x;
+        Node *tree = new(Node);
+        add(tree,in,pre);
+        post(tree);
+        cout<<endl;
     }
-    return 0;
 }
